@@ -33,7 +33,7 @@ jobs:
           echo "debug3"
           branch=${GITHUB_REF##*/}
           echo "$branch"
-          version=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q)
+          version=$(mvn help:evaluate -Dexpression=project.version -DforceStdout)
           echo "$version"
 
           if [[ "$branch" == "master" ]] || [[ "$branch" == "main" ]]; then
