@@ -33,6 +33,7 @@ jobs:
           echo "debug3"
           branch=${GITHUB_REF##*/}
           echo "$branch"
+          mvn help:evaluate -Dexpression=project.version
           version=$(mvn help:evaluate -Dexpression=project.version -DforceStdout)
           echo "$version"
 
