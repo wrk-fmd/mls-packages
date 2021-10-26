@@ -4,7 +4,6 @@ on:
   workflow_call:
     inputs:
       directory:
-        default: '.'
         type: string
     secrets:
       token:
@@ -25,9 +24,13 @@ jobs:
           cache: maven
       - name: Check SNAPSHOT state
         run: |
-          cd "${{ inputs.directory }}"
+          if [[ -n "${{ inputs.directory }}" ]]; then
+            cd "${{ inputs.directory }}"
+          fi
+
           branch=${GITHUB_REF##*/}
           version=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q)
+
           if [[ "$branch" == "master" ]] || [[ "$branch" == "main" ]]; then
             echo "On branch '${branch}', keeping version '${version}' as is."
           elif [[ "$version" == *SNAPSHOT ]]; then
@@ -38,7 +41,10 @@ jobs:
           fi
       - name: Publish artifact
         run: |
-          cd "${{ inputs.directory }}"
+          if [[ -n "${{ inputs.directory }}" ]]; then
+            cd "${{ inputs.directory }}"
+          fi
+
           mvn -B clean deploy
         env:
           GITHUB_TOKEN: "${{ secrets.token }}"
