@@ -4,6 +4,7 @@ on:
   workflow_call:
     inputs:
       directory:
+        default: "."
         type: string
     secrets:
       token:
@@ -24,19 +25,8 @@ jobs:
           cache: maven
       - name: Check SNAPSHOT state
         run: |
-          echo "debug1"
-          if [[ -n "${{ inputs.directory }}" ]]; then
-            echo "debug2"
-            cd "${{ inputs.directory }}"
-          fi
-
-          echo "debug3"
           branch=${GITHUB_REF##*/}
-          echo "$branch"
-          mvn help:evaluate -Dexpression=project.version
-          version=$(mvn help:evaluate -Dexpression=project.version -DforceStdout)
-          echo "$version"
-
+          version=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q)
           if [[ "$branch" == "master" ]] || [[ "$branch" == "main" ]]; then
             echo "On branch '${branch}', keeping version '${version}' as is."
           elif [[ "$version" == *SNAPSHOT ]]; then
@@ -45,14 +35,11 @@ jobs:
             echo "On branch '${branch}', appending -SNAPSHOT to version '${version}'."
             mvn versions:set versions:commit -DnewVersion="${version}-SNAPSHOT" -q
           fi
+        working-directory: "${{ inputs.directory }}"
         env:
           GITHUB_TOKEN: "${{ secrets.token }}"
       - name: Publish artifact
-        run: |
-          if [[ -n "${{ inputs.directory }}" ]]; then
-            cd "${{ inputs.directory }}"
-          fi
-
-          mvn -B clean deploy
+        run: mvn -B clean deploy
+        working-directory: "${{ inputs.directory }}"
         env:
           GITHUB_TOKEN: "${{ secrets.token }}"
