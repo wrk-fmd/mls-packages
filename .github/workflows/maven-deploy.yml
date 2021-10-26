@@ -10,10 +10,6 @@ on:
       token:
         required: true
 
-defaults:
-  run:
-    working-directory: ${{ inputs.directory }}
-
 jobs:
   deploy:
     name: Deploy artifact to GitHub Packages
