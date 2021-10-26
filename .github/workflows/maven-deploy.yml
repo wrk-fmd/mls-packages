@@ -24,6 +24,6 @@ jobs:
           java-version: 11
           cache: maven
       - name: Publish artifact
-        run: mvn -B clean deploy
+        run: cd '${{ inputs.directory }}' && mvn -B clean deploy
         env:
           GITHUB_TOKEN: ${{ secrets.token }}
