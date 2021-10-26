@@ -27,13 +27,17 @@ jobs:
         run: |
           branch=${GITHUB_REF##*/}
           version=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q)
-          if [[ "$branch" != "master" ]] && [[ "$branch" != "main" ]] && [[ "$version" != *SNAPSHOT ]]; then
-            echo "Appending -SNAPSHOT to artifact version because not on main branch"
+          if [[ "$branch" == "master" ]] || [[ "$branch" == "main" ]]; then
+            echo "On branch '${branch}', keeping version '${version}' as is."
+          elif [[ "$version" == *SNAPSHOT ]]; then
+            echo "On branch '${branch}', version '${version}' is already a SNAPSHOT version."
+          else
+            echo "On branch '${branch}', appending -SNAPSHOT to version '${version}'."
             mvn versions:set versions:commit -DnewVersion="${version}-SNAPSHOT" -q
           fi
-        working-directory: ${{ inputs.directory }}
+        working-directory: "${{ inputs.directory }}"
       - name: Publish artifact
         run: mvn -B clean deploy
-        working-directory: ${{ inputs.directory }}
+        working-directory: "${{ inputs.directory }}"
         env:
-          GITHUB_TOKEN: ${{ secrets.token }}
+          GITHUB_TOKEN: "${{ secrets.token }}"
