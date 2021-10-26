@@ -24,12 +24,17 @@ jobs:
           cache: maven
       - name: Check SNAPSHOT state
         run: |
+          echo "debug1"
           if [[ -n "${{ inputs.directory }}" ]]; then
+            echo "debug2"
             cd "${{ inputs.directory }}"
           fi
 
+          echo "debug3"
           branch=${GITHUB_REF##*/}
+          echo "$branch"
           version=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q)
+          echo "$version"
 
           if [[ "$branch" == "master" ]] || [[ "$branch" == "main" ]]; then
             echo "On branch '${branch}', keeping version '${version}' as is."
