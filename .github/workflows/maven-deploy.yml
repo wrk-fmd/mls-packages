@@ -44,6 +44,8 @@ jobs:
             echo "On branch '${branch}', appending -SNAPSHOT to version '${version}'."
             mvn versions:set versions:commit -DnewVersion="${version}-SNAPSHOT" -q
           fi
+        env:
+          GITHUB_TOKEN: "${{ secrets.token }}"
       - name: Publish artifact
         run: |
           if [[ -n "${{ inputs.directory }}" ]]; then
