@@ -1,0 +1,33 @@
+name: Deploy Maven artifact
+
+on:
+  workflow_call:
+    inputs:
+      directory:
+        required: true
+        type: string
+    secrets:
+      token:
+        required: true
+
+defaults:
+  run:
+    working-directory: ${{ inputs.directory }}
+
+jobs:
+  deploy:
+    name: Deploy artifact to GitHub Packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: temurin
+          java-version: 11
+          cache: maven
+      - name: Publish artifact
+        run: mvn -B clean deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.token }}
