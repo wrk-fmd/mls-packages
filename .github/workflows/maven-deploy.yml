@@ -23,14 +23,18 @@ jobs:
           distribution: temurin
           java-version: 11
           cache: maven
+      - name: Check SNAPSHOT state
+        run: |
+          cd '${{ inputs.directory }}'
+          branch=${GITHUB_REF##*/}
+          version=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q)
+          if [[ "$branch" != "master" ]] && [[ "$branch" != "main" ]] && [[ "$version" != *SNAPSHOT ]]; then
+            # Only allow main branch to publish non-snapshot artifacts
+            mvn versions:set versions:commit -DnewVersion="${version}-SNAPSHOT" -q
+          fi
       - name: Publish artifact
         run: |
           cd '${{ inputs.directory }}'
-          echo ${GITHUB_REF##*/}
-          version=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q)
-          if [[ "$version" != *SNAPSHOT ]]; then
-            mvn versions:set versions:commit -DnewVersion="${version}-SNAPSHOT"
-          fi
           mvn -B clean deploy
         env:
           GITHUB_TOKEN: ${{ secrets.token }}
