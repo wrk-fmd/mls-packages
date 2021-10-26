@@ -25,16 +25,15 @@ jobs:
           cache: maven
       - name: Check SNAPSHOT state
         run: |
-          cd '${{ inputs.directory }}'
           branch=${GITHUB_REF##*/}
           version=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q)
           if [[ "$branch" != "master" ]] && [[ "$branch" != "main" ]] && [[ "$version" != *SNAPSHOT ]]; then
-            # Only allow main branch to publish non-snapshot artifacts
+            echo "Appending -SNAPSHOT to artifact version because not on main branch"
             mvn versions:set versions:commit -DnewVersion="${version}-SNAPSHOT" -q
           fi
+        working-directory: ${{ inputs.directory }}
       - name: Publish artifact
-        run: |
-          cd '${{ inputs.directory }}'
-          mvn -B clean deploy
+        run: mvn -B clean deploy
+        working-directory: ${{ inputs.directory }}
         env:
           GITHUB_TOKEN: ${{ secrets.token }}
