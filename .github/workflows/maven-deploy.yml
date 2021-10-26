@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       directory:
-        required: true
+        default: '.'
         type: string
     secrets:
       token:
@@ -25,6 +25,7 @@ jobs:
           cache: maven
       - name: Check SNAPSHOT state
         run: |
+          cd "${{ inputs.directory }}"
           branch=${GITHUB_REF##*/}
           version=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q)
           if [[ "$branch" == "master" ]] || [[ "$branch" == "main" ]]; then
@@ -35,9 +36,9 @@ jobs:
             echo "On branch '${branch}', appending -SNAPSHOT to version '${version}'."
             mvn versions:set versions:commit -DnewVersion="${version}-SNAPSHOT" -q
           fi
-        working-directory: "${{ inputs.directory }}"
       - name: Publish artifact
-        run: mvn -B clean deploy
-        working-directory: "${{ inputs.directory }}"
+        run: |
+          cd "${{ inputs.directory }}"
+          mvn -B clean deploy
         env:
           GITHUB_TOKEN: "${{ secrets.token }}"
