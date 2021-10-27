@@ -4,17 +4,17 @@ on:
   workflow_call:
     inputs:
       PROJECT_MODULE:
-        required: true
+        default: ""
         type: string
       PROJECT_APP:
-        required: true
+        default: ""
         type: string
       DOCKER_NAME:
         required: true
         type: string
     secrets:
       MLS_PACKAGES_TOKEN:
-        required: true
+        required: false
       DOCKERHUB_USERNAME:
         required: true
       DOCKERHUB_TOKEN:
