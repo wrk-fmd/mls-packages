@@ -9,6 +9,9 @@ on:
       PROJECT_APP:
         default: ""
         type: string
+      DOCKER_CONTEXT:
+        default: "."
+        type: string
       DOCKER_NAME:
         required: true
         type: string
@@ -26,6 +29,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v2
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v3
@@ -64,6 +68,7 @@ jobs:
       - name: Build
         uses: docker/build-push-action@v2
         with:
+          context: ${{ inputs.DOCKER_CONTEXT }}
           build-args: |
             MODULE=${{ inputs.PROJECT_MODULE }}
             APP=${{ inputs.PROJECT_APP }}
