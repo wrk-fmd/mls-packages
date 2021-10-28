@@ -9,6 +9,9 @@ on:
       PROJECT_APP:
         default: ""
         type: string
+      BUILD_ARGS:
+        default: ""
+        type: string
       DOCKER_CONTEXT:
         default: "."
         type: string
@@ -72,6 +75,7 @@ jobs:
           build-args: |
             MODULE=${{ inputs.PROJECT_MODULE }}
             APP=${{ inputs.PROJECT_APP }}
+            ${{ inputs.BUILD_ARGS }}
           secret-files: |
             m2-settings=/tmp/m2-settings.xml
           tags: ${{ steps.meta.outputs.tags }}
