@@ -38,6 +38,9 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: "${{ inputs.DOCKER_NAME }}"
+          # Always set the 'latest' tag (for now)
+          # TODO Remove when first production release is available
+          flavor: latest=true
           tags: |
             type=ref,event=branch
             type=sha
