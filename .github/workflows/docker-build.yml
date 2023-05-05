@@ -32,10 +32,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Docker metadata
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           images: "${{ inputs.DOCKER_NAME }}"
           # Always set the 'latest' tag (for now)
@@ -66,13 +66,13 @@ jobs:
           GITHUB_TOKEN: "${{ secrets.MLS_PACKAGES_TOKEN }}"
 
       - name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           context: ${{ inputs.DOCKER_CONTEXT }}
           build-args: |
